@@ -1,5 +1,3 @@
-require "pry"
-
 class Board
     attr_accessor:cols, :positions_history, :moves_history
     def initialize(cols=[[0, 0, 0, 0, 0, 0],
