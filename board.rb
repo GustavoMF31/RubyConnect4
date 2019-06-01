@@ -104,7 +104,17 @@ class Board
         end
 
     end
+    def count_line(player)
+        # It currently doesnt count "lines" where the missing piece is 
+        # in the middle (like 1011), and consequently fails at recognizing
+        # some opportunities and threats. Fix that
 
+        vertical = count_vertical_line(player)
+        horizontal = count_horizontal_line(player)
+        diagonal = count_diagonal(player)
+
+        return vertical.zip(horizontal, diagonal).map { |a, b, c| a+b+c }
+    end
 
     def vertical_line
 
@@ -122,6 +132,32 @@ class Board
         end
 
         nil
+    end
+    def count_vertical_line(player)
+
+        line2, line3, line4 = [0, 0, 0]
+
+        @cols.each do |col|
+            col[0, 4].each_with_index do |piece, i|
+                if piece == player
+
+                    equal1 = piece == col[i+1]
+                    equal2 = piece == col[i+2]
+                    equal3 = piece == col[i+3]
+
+                    if equal1 && equal2 && equal3
+                        line4 +=1
+                    elsif equal1 && equal2 && col[i+3] == 0
+                        line3 +=1
+                    elsif equal1 && col[i+2] == 0 && col[i+3] == 0
+                        line2 += 1
+                    end
+
+                end
+            end
+        end
+
+        return [line2, line3, line4]
     end
 
 
@@ -144,6 +180,34 @@ class Board
         nil
 
     end
+    def count_horizontal_line(player)
+
+        line2, line3, line4 = [0, 0, 0]
+
+        rows = @cols.transpose
+
+        rows.each do |rows|
+            rows[0, 4].each_with_index do |piece, i|
+                if piece == player
+
+                    equal1 = piece == rows[i+1]
+                    equal2 = piece == rows[i+2]
+                    equal3 = piece == rows[i+3]
+
+                    if equal1 && equal2 && equal3
+                        line4 +=1
+                    elsif equal1 && equal2 && rows[i+3] == 0
+                        line3 +=1
+                    elsif equal1 && rows[i+2] == 0 && rows[i+3] == 0
+                        line2 += 1
+                    end
+
+                end
+            end
+        end
+
+        return [line2, line3, line4]
+    end
 
 
     def diagonal_line
@@ -154,7 +218,12 @@ class Board
             backwards_diagonal
         end
     end
+    def count_diagonal(player)
+        forward = count_forward_diagonal(player)
+        backwards = count_backwards_diagonal(player)
 
+        return forward.zip(backwards).map { |a, b| a + b }
+    end
 
     def forward_diagonal
 
@@ -174,6 +243,32 @@ class Board
 
         return nil
     end
+    def count_forward_diagonal(player)
+
+        line2, line3, line4 = [0, 0, 0]
+
+        @cols[0, 4].each_with_index do |col, i|
+            col[0, 3].each_with_index do |piece, j|
+                if piece == player
+
+                    equal1 = piece == @cols[i+1][j+1]
+                    equal2 = piece == @cols[i+2][j+2]
+                    equal3 = piece == @cols[i+3][j+3]
+
+                    if equal1 && equal2 && equal3
+                        line4 +=1
+                    elsif equal1 && equal2 && @cols[i+3][j+3] == 0
+                        line3 +=1
+                    elsif equal1 && @cols[i+2][j+2] == 0 && @cols[i+3][j+3] == 0
+                        line2 += 1
+                    end
+
+                end
+            end
+        end
+
+        return [line2, line3, line4]
+    end
 
 
     def backwards_diagonal
@@ -183,7 +278,7 @@ class Board
                 if i >= 3 and j < 3 and piece != 0
                     
                     if piece == @cols[i-1][j+1] &&
-                       piece == @cols[i-2][j+2] && 
+                       piece == @cols[i-2][j+2] &&
                        piece == @cols[i-3][j+3]
 
                         return piece
@@ -195,75 +290,32 @@ class Board
 
         return nil
     end
+    def count_backwards_diagonal(player)
 
-    def count_lines(player)
-
-        if not (player == 1 || player == 2)
-            raise "Bad player value for count_lines"
-        end
-
-
-        # pieces_count = [2pieces_line, 3pieces_line, 4pieces_line ... ]
-        pieces_count = [0,0,0,0,0,0]
+        line2, line3, line4 = [0, 0, 0]
 
         @cols.each_with_index do |col, i|
             col.each_with_index do |piece, j|
+                if i >= 3 && j < 3 && piece == player
 
-                cols_behind = i
-                cols_forward = 6 - i
+                    equal1 = piece == @cols[i-1][j+1]
+                    equal2 = piece == @cols[i-2][j+2]
+                    equal3 = piece == @cols[i-3][j+3]
 
-                pieces_on_top = 5 - j
-
-                last = true
-
-                # Vertical line (up)
-                (1..pieces_on_top).each do |k|
-                    if @cols[i][j+k] == player && piece == @cols[i][j+k] && last
-                        #binding.pry
-                        pieces_count[k - 1] += 1
-                    else
-                        last = false
+                    if equal1 && equal2 && equal3
+                        line4 +=1
+                    elsif equal1 && equal2 && @cols[i-3][j+3] == 0
+                        line3 +=1
+                    elsif equal1 && @cols[i-2][j+2] == 0 && @cols[i-3][j+3] == 0 
+                        line2 += 1
                     end
+
                 end
-
-                last = true
-
-                # Horizontal line (right)
-                (1..cols_forward).each do |k|
-                    if @cols[i+k][j] == player && piece == @cols[i][j+k] && last
-                        pieces_count[k - 1] += 1
-                    else
-                        last = false
-                    end
-                end
-
-                last = true
-
-                # Backwards diagonal (left, up)
-                (1..cols_behind).each do |k|
-                    if @cols[i-k][j+k] == player && piece == @cols[i][j+k] && last
-                        binding.pry
-                        pieces_count[k - 1] += 1
-                    else
-                        last = false
-                    end
-                end
-
-                last = true
-
-                # Forwards diagonal (right, up)
-                (1..cols_forward).each do |k|
-                    if @cols[i+k][j+k] == player && piece == @cols[i][j+k] && last
-                        pieces_count[k - 1] += 1
-                    else
-                        last = false
-                    end
-                end
-
             end
         end
 
-        return pieces_count
+        return [line2, line3, line4]
+
     end
 
     def to_s
