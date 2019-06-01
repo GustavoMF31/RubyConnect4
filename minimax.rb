@@ -1,6 +1,11 @@
 class MiniMax
-    DEPTH = 6
+    DEPTH = 5
     INFINITY = Float::INFINITY
+
+    #How many "points" each line is worth
+    LINE4VALUE = INFINITY
+    LINE3VALUE = 10
+    LINE2VALUE = 1
 
     def get_move(board, player_num)
         if player_num == 1
@@ -17,6 +22,10 @@ class MiniMax
 
         if depth == 0
             return [eval(board), nil]
+        end
+
+        if board.full?
+            return [0, nil]
         end
 
         if maximize
@@ -58,12 +67,12 @@ class MiniMax
 
         end
 
-        if best_move.include?(nil)
+        if best_move[1] == nil
             puts "DEBUG"
             puts "board=#{board.to_s}"
             puts "best_move=#{best_move}"
             puts "maximize=#{maximize}"
-            puts "depth=#{maximize}"
+            puts "depth=#{depth}"
             puts "player_num=#{player_num}"
 
         end
@@ -74,6 +83,14 @@ class MiniMax
 
         def eval(board)
             # Tells how good the position is for Player1
-            return 5
+
+            p1lines = board.count_line(1)
+            p2lines = board.count_line(2)
+
+            linesdiff = p1lines.zip(p2lines).map { |a, b| a - b }
+
+
+            return  linesdiff[0] * LINE2VALUE +
+                    linesdiff[1] * LINE3VALUE
         end
 end
