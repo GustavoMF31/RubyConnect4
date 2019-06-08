@@ -1,3 +1,5 @@
+require "pry"
+
 class Board
     attr_accessor:cols, :positions_history, :moves_history
     def initialize(cols=[[0, 0, 0, 0, 0, 0],
@@ -119,7 +121,7 @@ class Board
     def vertical_line
 
         @cols.each do |col|
-            col[0, 4].each_with_index do |piece, i|
+            col[0, 3].each_with_index do |piece, i|
                 if piece != 0 &&
                    piece == col[i+1] &&
                    piece == col[i+2] &&
@@ -135,29 +137,23 @@ class Board
     end
     def count_vertical_line(player)
 
-        line2, line3, line4 = [0, 0, 0]
+        lines = [0, 0, 0]
 
         @cols.each do |col|
-            col[0, 4].each_with_index do |piece, i|
+            col[0, 3].each_with_index do |piece, i|
                 if piece == player
 
-                    equal1 = piece == col[i+1]
-                    equal2 = piece == col[i+2]
-                    equal3 = piece == col[i+3]
+                    piece2 = col[i+1]
+                    piece3 = col[i+2]
+                    piece4 = col[i+3]
 
-                    if equal1 && equal2 && equal3
-                        line4 +=1
-                    elsif equal1 && equal2 && col[i+3] == 0
-                        line3 +=1
-                    elsif equal1 && col[i+2] == 0 && col[i+3] == 0
-                        line2 += 1
-                    end
+                    lines = check_line(lines, piece, piece2, piece3, piece4)
 
                 end
             end
         end
 
-        return [line2, line3, line4]
+        return lines
     end
 
 
@@ -182,7 +178,7 @@ class Board
     end
     def count_horizontal_line(player)
 
-        line2, line3, line4 = [0, 0, 0]
+        lines = [0, 0, 0]
 
         rows = @cols.transpose
 
@@ -190,23 +186,17 @@ class Board
             rows[0, 4].each_with_index do |piece, i|
                 if piece == player
 
-                    equal1 = piece == rows[i+1]
-                    equal2 = piece == rows[i+2]
-                    equal3 = piece == rows[i+3]
+                    piece2 = rows[i+1]
+                    piece3 = rows[i+2]
+                    piece4 = rows[i+3]
 
-                    if equal1 && equal2 && equal3
-                        line4 +=1
-                    elsif equal1 && equal2 && rows[i+3] == 0
-                        line3 +=1
-                    elsif equal1 && rows[i+2] == 0 && rows[i+3] == 0
-                        line2 += 1
-                    end
+                    lines = check_line(lines, piece, piece2, piece3, piece4)
 
                 end
             end
         end
 
-        return [line2, line3, line4]
+        return lines
     end
 
 
@@ -234,7 +224,6 @@ class Board
                    piece == @cols[i+2][j+2] &&
                    piece == @cols[i+3][j+3]
 
-                    
                     return piece
 
                 end
@@ -245,29 +234,23 @@ class Board
     end
     def count_forward_diagonal(player)
 
-        line2, line3, line4 = [0, 0, 0]
+        lines = [0, 0, 0]
 
         @cols[0, 4].each_with_index do |col, i|
             col[0, 3].each_with_index do |piece, j|
                 if piece == player
 
-                    equal1 = piece == @cols[i+1][j+1]
-                    equal2 = piece == @cols[i+2][j+2]
-                    equal3 = piece == @cols[i+3][j+3]
+                    piece2 = @cols[i+1][j+1]
+                    piece3 = @cols[i+2][j+2]
+                    piece4 = @cols[i+3][j+3]
 
-                    if equal1 && equal2 && equal3
-                        line4 +=1
-                    elsif equal1 && equal2 && @cols[i+3][j+3] == 0
-                        line3 +=1
-                    elsif equal1 && @cols[i+2][j+2] == 0 && @cols[i+3][j+3] == 0
-                        line2 += 1
-                    end
+                    lines = check_line(lines, piece, piece2, piece3, piece4)
 
                 end
             end
         end
 
-        return [line2, line3, line4]
+        return lines
     end
 
 
@@ -292,32 +275,45 @@ class Board
     end
     def count_backwards_diagonal(player)
 
-        line2, line3, line4 = [0, 0, 0]
+        lines = [0, 0, 0]
 
         @cols.each_with_index do |col, i|
             col.each_with_index do |piece, j|
                 if i >= 3 && j < 3 && piece == player
 
-                    equal1 = piece == @cols[i-1][j+1]
-                    equal2 = piece == @cols[i-2][j+2]
-                    equal3 = piece == @cols[i-3][j+3]
+                    piece2 = @cols[i-1][j+1]
+                    piece3 = @cols[i-2][j+2]
+                    piece4 = @cols[i-3][j+3]
 
-                    if equal1 && equal2 && equal3
-                        line4 +=1
-                    elsif equal1 && equal2 && @cols[i-3][j+3] == 0
-                        line3 +=1
-                    elsif equal1 && @cols[i-2][j+2] == 0 && @cols[i-3][j+3] == 0 
-                        line2 += 1
-                    end
+
+                    lines = check_line(lines, piece, piece2, piece3, piece4)
 
                 end
             end
         end
 
-        return [line2, line3, line4]
+        return lines
 
     end
 
+    def check_line(current_lines, piece, piece2, piece3, piece4)
+
+        # Line of 4
+        if piece == piece2 && piece == piece3 && piece == piece4
+            current_lines[2] += 1
+
+        # Line of 3
+        elsif piece == piece2 && piece == piece3 && piece4 == 0
+            current_lines[1] += 1
+
+        #Line of 2
+        elsif piece == piece2 && piece3 == 0 && piece4 == 0
+            current_lines[0] += 1
+        end
+
+        return current_lines
+
+    end
     def to_s
         @cols.transpose.reverse.map { |e| e.join(" ") } .join("\n")
     end
