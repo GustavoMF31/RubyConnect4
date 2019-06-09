@@ -26,7 +26,7 @@ game_board = Board.new
 players = [player_classes[p1_index].new(), player_classes[p2_index].new()]
 
 player_index = 0
-while not (game_board.line || game_board.full?)
+while not (game_board.winner || game_board.full?)
     player = players[player_index]
     game_board.make_move!(player_index + 1, player.get_move(game_board, player_index +1))
     player_index = (player_index == 0) ? 1 : 0
@@ -34,8 +34,8 @@ end
 
 puts game_board.to_s
 
-if game_board.line
-    print "The winner is #{game_board.line}!"
+if game_board.winner
+    print "The winner is #{game_board.winner}!"
 else
     print "I's a draw!"
 end

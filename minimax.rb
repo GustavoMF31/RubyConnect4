@@ -43,7 +43,7 @@ class MiniMax
             test_board = board.test_move(player_num, col_index)
 
             # If the move wins the game, choose it
-            if test_board.line == player_num
+            if test_board.winner == player_num
                 if maximize
                     return [INFINITY, col_index]
                 else

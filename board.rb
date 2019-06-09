@@ -85,16 +85,18 @@ class Board
         indexes
     end
 
-    def line
+    def winner
 
-        if vertical_line
-            vertical_line
-        elsif horizontal_line
-            horizontal_line
-        elsif diagonal_line
-            diagonal_line
-        end
+        v_line = vertical_line
+        return v_line if v_line
 
+        h_line = horizontal_line
+        return h_line if h_line
+
+        d_line = diagonal_line
+        return d_line if d_line
+
+        return nil
     end
     def count_line(player)
 
@@ -185,11 +187,14 @@ class Board
 
     def diagonal_line
 
-        if forward_diagonal
-            forward_diagonal
-        elsif backwards_diagonal
-            backwards_diagonal
-        end
+        f_diagonal = forward_diagonal
+        return f_diagonal if f_diagonal
+        
+        b_diagonal = backwards_diagonal
+        return b_diagonal if b_diagonal
+
+        return nil
+
     end
     def count_diagonal(player)
         forward = count_forward_diagonal(player)
