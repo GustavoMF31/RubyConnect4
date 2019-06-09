@@ -271,7 +271,6 @@ class Board
                     piece3 = @cols[i-2][j+2]
                     piece4 = @cols[i-3][j+3]
 
-
                     lines = check_line(lines, player, piece, piece2, piece3, piece4)
 
                 end
@@ -285,22 +284,36 @@ class Board
     def check_line(current_lines, player, piece, piece2, piece3, piece4)
 
         pieces = [piece, piece2, piece3, piece4]
+        empty = 0
+        player_pieces = 0
+        opponent_pieces = 0
+
+        # Count the pieces
+        pieces.each do |p|
+            if p == 0
+                empty += 1
+            elsif p == player
+                player_pieces += 1
+            else
+                opponent_pieces += 1
+            end
+        end
 
         # Line of 4
-        if pieces.all? { |p| p == player }
+        if player_pieces == 4
             current_lines[2] += 1
 
         # "Line" of 3 
         # Not really a line because the pieces might be spaced
         # More like a "threat" made of 3 pieces
-        elsif pieces.count { |p| p == player} == 3 &&
-              pieces.one? {|p| p == 0}
+        elsif player_pieces == 3 &&
+              empty == 1
 
             current_lines[1] += 1
 
         # "Threat" of 2
-        elsif pieces.count { |p| p == player} == 2 &&
-              pieces.count {|p| p == 0} == 2
+        elsif player_pieces == 2 &&
+              empty == 2
 
             current_lines[0] += 1
         end
