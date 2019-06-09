@@ -107,9 +107,6 @@ class Board
 
     end
     def count_line(player)
-        # It currently doesnt count "lines" where the missing piece is 
-        # in the middle (like 1011), and consequently fails at recognizing
-        # some opportunities and threats. Fix that
 
         vertical = count_vertical_line(player)
         horizontal = count_horizontal_line(player)
@@ -141,15 +138,13 @@ class Board
 
         @cols.each do |col|
             col[0, 3].each_with_index do |piece, i|
-                if piece == player
 
-                    piece2 = col[i+1]
-                    piece3 = col[i+2]
-                    piece4 = col[i+3]
+                piece2 = col[i+1]
+                piece3 = col[i+2]
+                piece4 = col[i+3]
 
-                    lines = check_line(lines, piece, piece2, piece3, piece4)
+                lines = check_line(lines, player, piece, piece2, piece3, piece4)
 
-                end
             end
         end
 
@@ -184,15 +179,13 @@ class Board
 
         rows.each do |rows|
             rows[0, 4].each_with_index do |piece, i|
-                if piece == player
 
-                    piece2 = rows[i+1]
-                    piece3 = rows[i+2]
-                    piece4 = rows[i+3]
+                piece2 = rows[i+1]
+                piece3 = rows[i+2]
+                piece4 = rows[i+3]
 
-                    lines = check_line(lines, piece, piece2, piece3, piece4)
+                lines = check_line(lines, player, piece, piece2, piece3, piece4)
 
-                end
             end
         end
 
@@ -238,15 +231,13 @@ class Board
 
         @cols[0, 4].each_with_index do |col, i|
             col[0, 3].each_with_index do |piece, j|
-                if piece == player
 
-                    piece2 = @cols[i+1][j+1]
-                    piece3 = @cols[i+2][j+2]
-                    piece4 = @cols[i+3][j+3]
+                piece2 = @cols[i+1][j+1]
+                piece3 = @cols[i+2][j+2]
+                piece4 = @cols[i+3][j+3]
 
-                    lines = check_line(lines, piece, piece2, piece3, piece4)
+                lines = check_line(lines, player, piece, piece2, piece3, piece4)
 
-                end
             end
         end
 
@@ -279,14 +270,14 @@ class Board
 
         @cols.each_with_index do |col, i|
             col.each_with_index do |piece, j|
-                if i >= 3 && j < 3 && piece == player
+                if i >= 3 && j < 3
 
                     piece2 = @cols[i-1][j+1]
                     piece3 = @cols[i-2][j+2]
                     piece4 = @cols[i-3][j+3]
 
 
-                    lines = check_line(lines, piece, piece2, piece3, piece4)
+                    lines = check_line(lines, player, piece, piece2, piece3, piece4)
 
                 end
             end
@@ -296,18 +287,26 @@ class Board
 
     end
 
-    def check_line(current_lines, piece, piece2, piece3, piece4)
+    def check_line(current_lines, player, piece, piece2, piece3, piece4)
+
+        pieces = [piece, piece2, piece3, piece4]
 
         # Line of 4
-        if piece == piece2 && piece == piece3 && piece == piece4
+        if pieces.all? { |p| p == player }
             current_lines[2] += 1
 
-        # Line of 3
-        elsif piece == piece2 && piece == piece3 && piece4 == 0
+        # "Line" of 3 
+        # Not really a line because the pieces might be spaced
+        # More like a "threat" made of 3 pieces
+        elsif pieces.count { |p| p == player} == 3 &&
+              pieces.one? {|p| p == 0}
+
             current_lines[1] += 1
 
-        #Line of 2
-        elsif piece == piece2 && piece3 == 0 && piece4 == 0
+        # "Threat" of 2
+        elsif pieces.count { |p| p == player} == 2 &&
+              pieces.count {|p| p == 0} == 2
+
             current_lines[0] += 1
         end
 
