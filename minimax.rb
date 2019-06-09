@@ -1,8 +1,8 @@
 class MiniMax
-    DEPTH = 5
+    DEPTH = 4
     INFINITY = Float::INFINITY
 
-    #How many "points" each line is worth
+    # How many "points" each line is worth
     LINE4VALUE = INFINITY
     LINE3VALUE = 10
     LINE2VALUE = 1
@@ -43,7 +43,7 @@ class MiniMax
             test_board = board.test_move(player_num, col_index)
 
             # If the move wins the game, choose it
-            if test_board.winner == player_num
+            if test_board.line == player_num
                 if maximize
                     return [INFINITY, col_index]
                 else
@@ -87,10 +87,10 @@ class MiniMax
             p1lines = board.count_line(1)
             p2lines = board.count_line(2)
 
-            linesdiff = p1lines.zip(p2lines).map { |a, b| a - b }
+            lines_diff = p1lines.zip(p2lines).map { |a, b| a - b }
 
 
-            return  linesdiff[0] * LINE2VALUE +
-                    linesdiff[1] * LINE3VALUE
+            return  lines_diff[0] * LINE2VALUE +
+                    lines_diff[1] * LINE3VALUE
         end
 end

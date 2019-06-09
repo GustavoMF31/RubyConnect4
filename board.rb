@@ -17,7 +17,7 @@ class Board
         @positions_history = []
         @moves_history = []
 
-        #Initialize empty board
+        # Initialize empty board
         @cols = cols
     end
 
@@ -47,7 +47,7 @@ class Board
     end
 
     def test_move(player, col_index)
-        #Returns a new Board with the move applied
+        # Returns a new Board with the move applied
 
         board_copy = @cols.map { |e| e.clone }
 
@@ -84,16 +84,6 @@ class Board
 
         indexes
     end
-
-    def winner
-        if full?
-            nil
-        else
-            line
-        end
-
-    end
-
 
     def line
 
