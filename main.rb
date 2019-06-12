@@ -23,7 +23,7 @@ p2_index = gets.to_i - 1
 
 game_board = Board.new
 
-players = [player_classes[p1_index].new(), player_classes[p2_index].new()]
+players = [player_classes[p1_index].new, player_classes[p2_index].new]
 
 player_index = 0
 while not (game_board.winner || game_board.full?)
