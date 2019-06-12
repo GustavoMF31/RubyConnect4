@@ -1,4 +1,4 @@
-require "pry"
+require "colorize"
 
 class Board
     attr_accessor:cols, :positions_history, :moves_history
@@ -321,8 +321,20 @@ class Board
         return current_lines
 
     end
+
+    def color(char)
+        return char.blue if char == "1"
+        return char.red  if char == "2"
+
+        return char
+    end
+
+    def color_array(a)
+        return a.map { |e| color(e.to_s) }
+    end
+
     def to_s
-        @cols.transpose.reverse.map { |e| e.join(" ") } .join("\n")
+        @cols.transpose.reverse.map { |a| color_array(a).join(" ") } .join("\n")
     end
 
 end
