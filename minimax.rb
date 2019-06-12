@@ -1,5 +1,4 @@
 class MiniMax
-    DEPTH = 4
     INFINITY = Float::INFINITY
 
     # How many "points" each line is worth
@@ -8,10 +7,12 @@ class MiniMax
     LINE2VALUE = 1
 
     def get_move(board, player_num)
+        depth = choose_depth(board)
+
         if player_num == 1
-            pos_value, move = minimax(board, player_num, true, DEPTH)
+            pos_value, move = minimax(board, player_num, true, depth)
         else
-            pos_value, move = minimax(board, player_num, false, DEPTH)
+            pos_value, move = minimax(board, player_num, false, depth)
         end
 
         return move
@@ -81,16 +82,30 @@ class MiniMax
 
     end
 
-        def eval(board)
-            # Tells how good the position is for Player1
+    def choose_depth(board)
+        # Choose the most appropriate depth
+        # According to how many open columns are left
 
-            p1lines = board.count_line(1)
-            p2lines = board.count_line(2)
+        open_cols = board.valid_cols_indexes.length
 
-            lines_diff = p1lines.zip(p2lines).map { |a, b| a - b }
+        return 4 if open_cols == 7 || open_cols == 6
+        return 5 if open_cols == 5 || open_cols == 4
+        return 7 if open_cols == 3
+        return 11 if open_cols == 2 || open_cols == 1
 
 
-            return  lines_diff[0] * LINE2VALUE +
-                    lines_diff[1] * LINE3VALUE
-        end
+    end
+
+    def eval(board)
+        # Tells how good the position is for Player1
+
+        p1lines = board.count_line(1)
+        p2lines = board.count_line(2)
+
+        lines_diff = p1lines.zip(p2lines).map { |a, b| a - b }
+
+
+        return  lines_diff[0] * LINE2VALUE +
+                lines_diff[1] * LINE3VALUE
+    end
 end
