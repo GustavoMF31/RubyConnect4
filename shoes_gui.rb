@@ -64,22 +64,17 @@ Shoes.app do
 
     @game_ended = false
     @winner = nil
-    
 
     flow margin: 0 do
         (1..7).each do |i|
             button i.to_s, margin: [19, 0, 19, 0] do
-                if @game_ended
-                    return nil
-                end
+                next if @game_ended
 
                 @game_board.make_move!(1, i - 1)
                 redraw_board(@game_board)
                 check_for_winner
 
-                if @game_ended
-                    return nil
-                end
+                next if @game_ended
 
                 opponent_move = @opponent.get_move(@game_board, 2)
                 @game_board.make_move!(2, opponent_move)
